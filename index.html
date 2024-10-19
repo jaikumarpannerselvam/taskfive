@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Reservation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('./image/daniel-abadia-Njq3Nz6-5rQ-unsplash.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .form-section, .reservation-section, .view-section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #reservations {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Railway Reservation System</h1>
+        <div class="form-section">
+            <label for="trainNumber">Train Number:</label>
+            <input type="number" id="trainNumber" placeholder="Enter Train Number">
+
+            <label for="trainName">Train Name:</label>
+            <input type="text" id="trainName" placeholder="Enter Train Name">
+
+            <label for="availableSeats">Available Seats:</label>
+            <input type="number" id="availableSeats" placeholder="Enter Available Seats">
+
+            <button onclick="addTrain()">Add Train</button>
+        </div>
+
+        <div class="reservation-section">
+            <h2>Make Reservation</h2>
+            <label for="reservationTrainNumber">Train Number:</label>
+            <input type="number" id="reservationTrainNumber" placeholder="Enter Train Number">
+
+            <label for="passengerName">Passenger Name:</label>
+            <input type="text" id="passengerName" placeholder="Enter Passenger Name">
+
+            <label for="passengerAge">Passenger Age:</label>
+            <input type="number" id="passengerAge" placeholder="Enter Passenger Age">
+
+            <label for="passengerGender">Passenger Gender:</label>
+            <input type="text" id="passengerGender" placeholder="Enter Passenger Gender">
+
+            <button onclick="makeReservation()">Reserve Seat</button>
+        </div>
+
+        <div class="view-section">
+            <h2>View Reservations</h2>
+            <button onclick="viewReservations()">View Reservations</button>
+            <div id="reservations"></div>
+        </div>
+    </div>
+
+    <script>
+        let trains = [];
+        let reservations = [];
+
+        function addTrain() {
+            const trainNumber = parseInt(document.getElementById('trainNumber').value);
+            const trainName = document.getElementById('trainName').value;
+            const availableSeats = parseInt(document.getElementById('availableSeats').value);
+
+            if (isNaN(trainNumber) || !trainName || isNaN(availableSeats)) {
+                alert("Please fill in all fields correctly.");
+                return;
+            }
+
+            trains.push({
+                trainNumber,
+                trainName,
+                availableSeats
+            });
+
+            alert("Train added successfully!");
+            document.getElementById('trainNumber').value = '';
+            document.getElementById('trainName').value = '';
+            document.getElementById('availableSeats').value = '';
+        }
+
+        function makeReservation() {
+            const trainNumber = parseInt(document.getElementById('reservationTrainNumber').value);
+            const passengerName = document.getElementById('passengerName').value;
+            const passengerAge = parseInt(document.getElementById('passengerAge').value);
+            const passengerGender = document.getElementById('passengerGender').value;
+
+            const train = trains.find(t => t.trainNumber === trainNumber);
+            if (!train || train.availableSeats <= 0) {
+                alert("Train not found or no available seats.");
+                return;
+            }
+
+            train.availableSeats -= 1;
+            reservations.push({
+                train,
+                passenger: {
+                    name: passengerName,
+                    age: passengerAge,
+                    gender: passengerGender
+                }
+            });
+
+            alert("Reservation successful!");
+            document.getElementById('reservationTrainNumber').value = '';
+            document.getElementById('passengerName').value = '';
+            document.getElementById('passengerAge').value = '';
+            document.getElementById('passengerGender').value = '';
+        }
+
+        function viewReservations() {
+            const reservationsDiv = document.getElementById('reservations');
+            reservationsDiv.innerHTML = '';
+
+            if (reservations.length === 0) {
+                reservationsDiv.innerHTML = '<p>No reservations found.</p>';
+                return;
+            }
+
+            reservations.forEach((res, index) => {
+                const reservationDetails = `
+                    <p>${index + 1}. Train: ${res.train.trainName} (${res.train.trainNumber}),
+                    Passenger: ${res.passenger.name}, Age: ${res.passenger.age}, Gender: ${res.passenger.gender}</p>
+                `;
+                reservationsDiv.innerHTML += reservationDetails;
+            });
+        }
+    </script>
+</body>
+</html>
